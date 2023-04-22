@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/notesFragment">
+
+    <fragment
+        android:id="@+id/notesFragment"
+        android:name="com.meriniguan.notepad.screens.notes.NotesFragment"
+        android:label="@string/notes" >
+        <action
+            android:id="@+id/action_notesFragment_to_addEditNoteFragment"
+            app:destination="@id/addEditNoteFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/addEditNoteFragment"
+        android:name="com.meriniguan.notepad.screens.addeditnote.AddEditNoteFragment"
+        android:label="{screenTitle}" >
+        <argument
+            android:name="note"
+            app:argType="com.meriniguan.notepad.model.note.entities.Note"
+            app:nullable="true"
+            android:defaultValue="@null" />
+        <argument
+            android:name="addImageAtLaunch"
+            app:argType="boolean"
+            android:defaultValue="false" />
+        <argument
+            android:name="screenTitle"
+            app:argType="string" />
+    </fragment>
+</navigation>

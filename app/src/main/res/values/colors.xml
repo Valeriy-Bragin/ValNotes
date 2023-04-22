@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black_brown_light">#928b92</color>
+    <color name="black_brown">#201E20</color>
+    <color name="black_brown_dark">#100f10</color>
+    <color name="tan">#e0aa6e</color>
+    <color name="tan_dark">#89561d</color>
+    <color name="tan_dark_pressed">#533512</color>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+
+    <color name="text_color">#b9000000</color>
+</resources>

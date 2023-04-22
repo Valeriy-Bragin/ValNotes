@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="note_height">100dp</dimen>
+    <dimen name="category_marker_width">7dp</dimen>
+    <dimen name="app_margin">7dp</dimen>
+    <dimen name="app_padding">7dp</dimen>
+    <dimen name="small_margin">4dp</dimen>
+    <dimen name="space_between_notes_list_items">7dp</dimen>
+    <dimen name="fab_margin">30dp</dimen>
+    <dimen name="image_height">200dp</dimen>
+    <dimen name="image_margin">2dp</dimen>
+
+    <item name="fab_expand_menu_button" type="id"/>
+    <item name="fab_label" type="id"/>
+
+    <dimen name="navigation_drawer_image_height">180dp</dimen>
+    <dimen name="big_margin">16dp</dimen>
+    <dimen name="header_app_title_size">30sp</dimen>
+</resources>
