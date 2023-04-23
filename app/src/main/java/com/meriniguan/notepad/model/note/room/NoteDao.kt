@@ -3,10 +3,7 @@ package com.meriniguan.notepad.model.note.room
 import androidx.room.*
 import com.meriniguan.notepad.model.image.room.tuples.DeleteImageTuple
 import com.meriniguan.notepad.model.image.room.ImageDbEntity
-import com.meriniguan.notepad.model.note.room.tuples.DeleteNoteTuple
-import com.meriniguan.notepad.model.note.room.tuples.UpdateNoteContentTuple
-import com.meriniguan.notepad.model.note.room.tuples.UpdateNoteLastModificationDateTuple
-import com.meriniguan.notepad.model.note.room.tuples.UpdateNoteSelectionTuple
+import com.meriniguan.notepad.model.note.room.tuples.*
 import com.meriniguan.notepad.utils.Selection
 import com.meriniguan.notepad.model.preferences.SortOrder
 import kotlinx.coroutines.flow.Flow
@@ -133,6 +130,9 @@ interface NoteDao {
 
     @Update(entity = NoteDbEntity::class)
     suspend fun updateNoteDateUpdated(updateTuple: UpdateNoteLastModificationDateTuple)
+
+    @Update(entity = NoteDbEntity::class)
+    suspend fun updateNoteDateReminded(updateTuple: UpdateNoteDateRemindedTuple)
 
     @Delete(entity = NoteDbEntity::class)
     suspend fun deleteNote(deleteNoteTuple: DeleteNoteTuple)

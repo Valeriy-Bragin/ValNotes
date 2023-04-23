@@ -10,10 +10,7 @@ import com.meriniguan.notepad.model.note.NotesRepository
 import com.meriniguan.notepad.model.note.entities.Note
 import com.meriniguan.notepad.model.note.entities.NotesPageLoader
 import com.meriniguan.notepad.model.note.entities.NotesPagingSource
-import com.meriniguan.notepad.model.note.room.tuples.DeleteNoteTuple
-import com.meriniguan.notepad.model.note.room.tuples.UpdateNoteContentTuple
-import com.meriniguan.notepad.model.note.room.tuples.UpdateNoteLastModificationDateTuple
-import com.meriniguan.notepad.model.note.room.tuples.UpdateNoteSelectionTuple
+import com.meriniguan.notepad.model.note.room.tuples.*
 import com.meriniguan.notepad.utils.Selection
 import com.meriniguan.notepad.model.preferences.SortOrder
 import kotlinx.coroutines.CoroutineDispatcher
@@ -55,6 +52,9 @@ class RoomNotesRepository @Inject constructor(
         noteDao.updateNoteDateUpdated(UpdateNoteLastModificationDateTuple(noteId, System.currentTimeMillis()))
     }
 
+    override suspend fun updateNoteDateReminded(noteId: Long, dateReminded: Long) {
+        noteDao.updateNoteDateReminded(UpdateNoteDateRemindedTuple(noteId, dateReminded))
+    }
     override suspend fun deleteNote(noteId: Long) = withContext(ioDispatcher) {
         noteDao.deleteNote(DeleteNoteTuple(noteId))
     }

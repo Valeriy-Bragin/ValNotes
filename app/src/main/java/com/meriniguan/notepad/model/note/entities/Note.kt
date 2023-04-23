@@ -13,6 +13,7 @@ data class Note(
     val isTrashed: Boolean = false,
     val dateCreated: Long = System.currentTimeMillis(),
     val dateUpdated: Long = System.currentTimeMillis(),
+    val dateReminded: Long = 0,
     val id: Long = 0
 ) : Parcelable {
     val dateCreatedFormatted: String

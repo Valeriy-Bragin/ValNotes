@@ -43,7 +43,6 @@
     <string name="note_archived">Note archived</string>
     <string name="undo">UNDO</string>
     <string name="note_trashed">Note moved to trash</string>
-    <string name="try_again">Try again</string>
     <string name="load_error">Load error</string>
     <string name="note_restored">Note restored</string>
     <string name="empty_trash">Empty trash</string>
@@ -54,6 +53,9 @@
     <string name="add_note">Add note</string>
     <string name="edit_note">Edit note</string>
     <string name="app_drawer_header_desc">App drawer header</string>
-
-    <style name="try_again">Try again</style>
+    <string name="time_picker_title">Select Alarm Time\</string>
+    <string name="try_again">Try again</string>
+    <string name="reminder_set_for">Reminder set for %1$s</string>
+    <string name="remove_reminder">Remove reminder?</string>
+    <string name="ok">OK</string>
 </resources>

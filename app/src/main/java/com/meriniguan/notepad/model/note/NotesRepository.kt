@@ -18,6 +18,8 @@ interface NotesRepository {
 
     suspend fun updateNoteLastModificationDate(noteId: Long)
 
+    suspend fun updateNoteDateReminded(noteId: Long, dateReminded: Long)
+
     suspend fun deleteNote(noteId: Long)
 
     suspend fun deleteTrashedNotes()

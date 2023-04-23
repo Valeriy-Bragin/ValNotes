@@ -36,14 +36,13 @@
         android:layout_marginTop="4dp"
         android:visibility="visible"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.538"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/titleEditText" />
 
     <EditText
         android:id="@+id/contentEditText"
         android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/app_margin"
         android:background="@android:color/transparent"
         android:gravity="top"
@@ -52,10 +51,33 @@
         android:inputType="textMultiLine"
         android:padding="@dimen/app_padding"
         android:scrollbars="vertical"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/imagesRecyclerView" />
 
+    <ImageView
+        android:id="@+id/reminderImageView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/alarm_add"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/contentEditText"
+        android:layout_marginTop="@dimen/app_margin" />
+
+    <TextView
+        android:id="@+id/reminderTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toEndOf="@id/reminderImageView"
+        app:layout_constraintBottom_toBottomOf="@id/reminderImageView"
+        app:layout_constraintTop_toTopOf="@id/reminderImageView"
+        android:text="@string/add_reminder"
+        android:layout_marginStart="@dimen/app_margin"/>
+
+    <androidx.constraintlayout.widget.Group
+        android:id="@+id/reminderGroup"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:constraint_referenced_ids="reminderTextView, reminderImageView"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

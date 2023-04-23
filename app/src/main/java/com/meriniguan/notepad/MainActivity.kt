@@ -1,6 +1,9 @@
 package com.meriniguan.notepad
 
 import android.app.Activity
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.os.Build
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
@@ -56,11 +59,10 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
         setSupportActionBar(binding.appBarMain.toolbar)
+        createReminderNotificationChannel()
 
         val drawerLayout: DrawerLayout = binding.drawerLayout
         val navView: NavigationView = binding.navView
@@ -150,6 +152,20 @@ class MainActivity : AppCompatActivity() {
         }
         matcher.appendTail(title)
         return title.toString()
+    }
+
+    private fun createReminderNotificationChannel() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val name: CharSequence = "reminderChannelName"
+            val description = "channel for reminder alarm manager"
+            val importance = NotificationManager.IMPORTANCE_HIGH
+            val channel = NotificationChannel("reminderChannel", name, importance)
+            channel.description = description
+            val notificationManager = getSystemService(
+                NotificationManager::class.java
+            )
+            notificationManager.createNotificationChannel(channel)
+        }
     }
 
     private fun getNotesDestination(): Int = R.id.notesFragment

@@ -14,6 +14,7 @@ data class NoteDbEntity(
     @ColumnInfo(name = "is_trashed") val isTrashed: Boolean = false,
     @ColumnInfo(name = "date_created") val dateCreated: Long = System.currentTimeMillis(),
     @ColumnInfo(name = "date_updated") val dateUpdated: Long = System.currentTimeMillis(),
+    @ColumnInfo(name = "date_reminded") val dateReminded: Long = 0,
     @PrimaryKey(autoGenerate = true) @ColumnInfo(name = "note_id") val id: Long = 0
 ) {
     companion object {
@@ -24,6 +25,7 @@ data class NoteDbEntity(
             isTrashed = note.isTrashed,
             dateCreated = note.dateCreated,
             dateUpdated = note.dateUpdated,
+            dateReminded = note.dateReminded,
             id = note.id
         )
     }

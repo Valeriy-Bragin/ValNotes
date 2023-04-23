@@ -1,9 +1,13 @@
 package com.meriniguan.notepad.screens.addeditnote
 
 import android.app.Activity
+import android.app.AlarmManager
 import android.app.AlertDialog
+import android.app.PendingIntent
+import android.content.Context.ALARM_SERVICE
 import android.content.Intent
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuInflater
@@ -22,11 +26,16 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import com.github.dhaval2404.imagepicker.ImagePicker
+import com.google.android.material.timepicker.MaterialTimePicker
+import com.google.android.material.timepicker.TimeFormat
 import com.meriniguan.notepad.R
 import com.meriniguan.notepad.databinding.FragmentAddEditNoteBinding
 import com.meriniguan.notepad.screens.addeditnote.adapters.ImagesAdapter
+import com.meriniguan.notepad.utils.ReminderAlarmReceiver
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
+import java.text.DateFormat
+import java.util.*
 
 @AndroidEntryPoint
 class AddEditNoteFragment : Fragment(R.layout.fragment_add_edit_note) {
@@ -47,6 +56,8 @@ class AddEditNoteFragment : Fragment(R.layout.fragment_add_edit_note) {
         addTextChangedListeners()
 
         setupImagesList()
+
+        setupReminderFields()
 
         observeEvents()
         observeOnBackPressed()
@@ -100,6 +111,12 @@ class AddEditNoteFragment : Fragment(R.layout.fragment_add_edit_note) {
         }, viewLifecycleOwner, Lifecycle.State.RESUMED)
     }
 
+    private fun setupReminderFields() {
+        binding.reminderGroup.setOnClickListener {
+            viewModel.onReminderClick()
+        }
+    }
+
     private fun observeEvents() = viewLifecycleOwner.lifecycleScope.launchWhenStarted {
         viewModel.eventFlow.collect { event ->
             when (event) {
@@ -136,8 +153,55 @@ class AddEditNoteFragment : Fragment(R.layout.fragment_add_edit_note) {
                 AddEditNoteViewModel.Event.NavigateBack -> {
                     findNavController().navigateUp()
                 }
+                AddEditNoteViewModel.Event.ShowTimePicker -> {
+                    showTimePicker()
+                }
+                is AddEditNoteViewModel.Event.SetReminderAlarm -> {
+                    setReminderAlarm(
+                        event.requestKey,
+                        event.dateReminded,
+                        event.title,
+                        event.content
+                    )
+                }
+                is AddEditNoteViewModel.Event.UpdateDateRemindedUI -> {
+                    binding.reminderTextView.text =
+                        getString(R.string.reminder_set_for, formatDate(event.dateReminded))
+                }
+                is AddEditNoteViewModel.Event.ShowConfirmDeleteReminderScreen -> {
+                    AlertDialog.Builder(requireContext())
+                        .setMessage(event.messageRes)
+                        .setPositiveButton(event.buttonTextRes) { _, _ ->
+                            viewModel.onDeleteReminderConfirmed()
+                        }
+                }
+                is AddEditNoteViewModel.Event.CancelReminderAlarm -> {
+                    cancelReminderAlarm(event.requestKey)
+                }
             }
         }
+    }
+
+    private fun setReminderAlarm(requestKey: Int, dateReminded: Long, title: String, content: String) {
+        val alarmManager = requireActivity().getSystemService(ALARM_SERVICE) as AlarmManager
+        val intent = Intent(requireContext(), ReminderAlarmReceiver::class.java)
+        intent.putExtra("title", title)
+        intent.putExtra("content", content)
+        val pendingIntent = PendingIntent.getBroadcast(requireContext(), requestKey, intent, getPendingIntentFlags())
+        alarmManager.set(
+            AlarmManager.RTC_WAKEUP, dateReminded, pendingIntent
+        )
+    }
+    private fun cancelReminderAlarm(requestKey: Int) {
+        val alarmManager = requireActivity().getSystemService(ALARM_SERVICE) as AlarmManager
+        val intent = Intent(requireContext(), ReminderAlarmReceiver::class.java)
+        val pendingIntent = PendingIntent.getBroadcast(
+            requireContext(),
+            requestKey,
+            intent,
+            getPendingIntentFlags()
+        )
+        alarmManager.cancel(pendingIntent)
     }
 
     private fun captureImageWithCamera() {
@@ -166,6 +230,33 @@ class AddEditNoteFragment : Fragment(R.layout.fragment_add_edit_note) {
             }
         })
     }
+    private fun showTimePicker() {
+        val picker = MaterialTimePicker.Builder()
+            .setTimeFormat(TimeFormat.CLOCK_24H)
+            .setHour(12)
+            .setMinute(0)
+            .setTitleText(getString(R.string.time_picker_title))
+            .build()
+        picker.show(requireActivity().supportFragmentManager, "pickerTag")
+
+        picker.addOnPositiveButtonClickListener {
+            val calendar = Calendar.getInstance()
+            calendar[Calendar.HOUR_OF_DAY] = picker.hour
+            calendar[Calendar.MINUTE] = picker.minute
+            calendar[Calendar.SECOND] = 0
+            calendar[Calendar.MILLISECOND] = 0
+            viewModel.onTimePicked(calendar.timeInMillis)
+        }
+    }
+    private fun getPendingIntentFlags(): Int =
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            PendingIntent.FLAG_MUTABLE
+        } else {
+            PendingIntent.FLAG_ONE_SHOT
+        }
+
+    private fun formatDate(dateReminded: Long): String =
+        DateFormat.getDateTimeInstance().format(dateReminded)
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)

@@ -2,8 +2,10 @@ package com.meriniguan.notepad.screens.addeditnote
 
 import android.app.Application
 import android.net.Uri
+import androidx.annotation.StringRes
 import androidx.lifecycle.*
 import androidx.work.*
+import com.meriniguan.notepad.R
 import com.meriniguan.notepad.EMPTY_NOTE_DISCARDED_RESULT_OK
 import com.meriniguan.notepad.NOTE_UPDATED_RESULT_OK
 import com.meriniguan.notepad.model.image.entities.Image
@@ -162,7 +164,9 @@ class AddEditNoteViewModel @Inject constructor(
             if (!isTextDataChanged && isAdding && imagesCount == 0) {
                 repository.deleteNote(note.id)
             }
-            setEmptyNoteDiscardedResult()
+            if (isAdding) {
+                setEmptyNoteDiscardedResult()
+            }
         }
     }
 
@@ -221,6 +225,25 @@ class AddEditNoteViewModel @Inject constructor(
         imagesCount -= 1
     }
 
+    fun onReminderClick() = viewModelScope.launch {
+        eventChannel.send(Event.ShowTimePicker)
+    }
+
+    fun onTimePicked(dateReminded: Long) = viewModelScope.launch {
+        repository.updateNoteDateReminded(note.id, dateReminded)
+        eventChannel.send(Event.SetReminderAlarm(note.id.toInt(), dateReminded, note.title, note.text))
+        eventChannel.send(Event.UpdateDateRemindedUI(dateReminded))
+    }
+
+    fun onReminderLongClick() = viewModelScope.launch {
+        eventChannel.send(Event.ShowConfirmDeleteReminderScreen(R.string.remove_reminder, R.string.ok))
+    }
+
+    fun onDeleteReminderConfirmed() = viewModelScope.launch {
+        repository.updateNoteDateReminded(note.id, 0)
+        eventChannel.send(Event.CancelReminderAlarm(note.id.toInt()))
+    }
+
     sealed class Event {
         data class SetFragmentResult(
             val requestKey: String,
@@ -232,5 +255,23 @@ class AddEditNoteViewModel @Inject constructor(
         object StartObservingImages : Event()
         object ShowPickImageFromGalleryScreen : Event()
         object NavigateBack : Event()
+
+        object ShowTimePicker : Event()
+
+        data class SetReminderAlarm(
+            val requestKey: Int,
+            val dateReminded: Long,
+            val title: String,
+            val content: String
+        ) : Event()
+
+        data class UpdateDateRemindedUI(val dateReminded: Long) : Event()
+
+        data class ShowConfirmDeleteReminderScreen(
+            @StringRes val messageRes: Int,
+            @StringRes val buttonTextRes: Int
+        ) : Event()
+
+        data class CancelReminderAlarm(val requestKey: Int) : Event()
     }
 }
