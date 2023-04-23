@@ -17,6 +17,7 @@ data class NoteDbEntity(
     @ColumnInfo(name = "date_reminded") val dateReminded: Long = 0,
     @PrimaryKey(autoGenerate = true) @ColumnInfo(name = "note_id") val id: Long = 0
 ) {
+
     companion object {
         fun fromNote(note: Note): NoteDbEntity = NoteDbEntity(
             text = note.text,

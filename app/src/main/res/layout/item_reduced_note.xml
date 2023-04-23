@@ -26,8 +26,8 @@
             android:layout_marginStart="@dimen/app_margin"
             android:layout_marginTop="@dimen/app_margin"
             android:layout_marginEnd="@dimen/app_margin"
+            app:layout_constraintEnd_toStartOf="@id/attachmentImageView"
             style="@style/ListItemTitleText"
-            app:layout_constraintEnd_toStartOf="@+id/attachmentImageView"
             app:layout_constraintStart_toEndOf="@id/categoryMarker"
             app:layout_constraintTop_toTopOf="parent"
             tools:text="Title" />

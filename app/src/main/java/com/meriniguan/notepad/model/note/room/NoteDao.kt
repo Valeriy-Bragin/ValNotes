@@ -117,7 +117,7 @@ interface NoteDao {
 
     @Transaction
     @Query("SELECT * FROM notes WHERE note_id = :id")
-    fun getNoteById(id: Long): Flow<NoteWithImages>
+    fun getNoteWithImagesFlow(id: Long): Flow<NoteWithImages>
 
     @Insert
     suspend fun addNote(noteDbEntity: NoteDbEntity): Long
@@ -136,6 +136,9 @@ interface NoteDao {
 
     @Delete(entity = NoteDbEntity::class)
     suspend fun deleteNote(deleteNoteTuple: DeleteNoteTuple)
+
+    @Query("SELECT * FROM notes WHERE note_id = :id")
+    suspend fun getNoteById(id: Long): NoteDbEntity
 
     @Query("DELETE FROM notes WHERE is_trashed = 1")
     suspend fun deleteTrashedNotes()

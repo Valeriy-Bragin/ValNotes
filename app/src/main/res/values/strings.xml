@@ -58,4 +58,5 @@
     <string name="reminder_set_for">Reminder set for %1$s</string>
     <string name="remove_reminder">Remove reminder?</string>
     <string name="ok">OK</string>
+    <string name="reminder_image_desc">It shows that a note has a reminder</string>
 </resources>

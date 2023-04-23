@@ -45,12 +45,15 @@ class AddEditNoteViewModel @Inject constructor(
     private var originalTitle = ""
     private var originalContent = ""
 
+    var dateReminded: Long = 0
+
     init {
         viewModelScope.launch {
             val initNoteJob = initNote()
             initNoteJob.join()
 
             initOriginalTextValues()
+            dateReminded = note.dateReminded
 
             val initImagesJob = initImages()
             initImagesJob.join()
@@ -98,6 +101,7 @@ class AddEditNoteViewModel @Inject constructor(
             newlyAddedNoteId = repository.addNote(newNote)
             note = newNote.copy(id = newlyAddedNoteId!!)
         } else {
+
             note = argumentNote
         }
     }
@@ -166,6 +170,8 @@ class AddEditNoteViewModel @Inject constructor(
             }
             if (isAdding) {
                 setEmptyNoteDiscardedResult()
+            } else {
+                eventChannel.send(Event.NavigateBack)
             }
         }
     }
@@ -231,8 +237,10 @@ class AddEditNoteViewModel @Inject constructor(
 
     fun onTimePicked(dateReminded: Long) = viewModelScope.launch {
         repository.updateNoteDateReminded(note.id, dateReminded)
-        eventChannel.send(Event.SetReminderAlarm(note.id.toInt(), dateReminded, note.title, note.text))
-        eventChannel.send(Event.UpdateDateRemindedUI(dateReminded))
+        if (dateReminded > System.currentTimeMillis()) {
+            eventChannel.send(Event.SetReminderAlarm(note.id, dateReminded))
+        }
+        eventChannel.send(Event.UpdateDateRemindeddUI(dateReminded))
     }
 
     fun onReminderLongClick() = viewModelScope.launch {
@@ -242,6 +250,7 @@ class AddEditNoteViewModel @Inject constructor(
     fun onDeleteReminderConfirmed() = viewModelScope.launch {
         repository.updateNoteDateReminded(note.id, 0)
         eventChannel.send(Event.CancelReminderAlarm(note.id.toInt()))
+        eventChannel.send(Event.ResetDateRemindedUI)
     }
 
     sealed class Event {
@@ -259,13 +268,13 @@ class AddEditNoteViewModel @Inject constructor(
         object ShowTimePicker : Event()
 
         data class SetReminderAlarm(
-            val requestKey: Int,
-            val dateReminded: Long,
-            val title: String,
-            val content: String
+            val noteId: Long,
+            val dateReminded: Long
         ) : Event()
 
-        data class UpdateDateRemindedUI(val dateReminded: Long) : Event()
+        data class UpdateDateRemindeddUI(val dateReminded: Long) : Event()
+
+        object ResetDateRemindedUI : Event()
 
         data class ShowConfirmDeleteReminderScreen(
             @StringRes val messageRes: Int,

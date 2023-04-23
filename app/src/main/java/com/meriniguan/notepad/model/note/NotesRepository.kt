@@ -32,6 +32,8 @@ interface NotesRepository {
 
     fun getImagesByNoteId(noteId: Long): Flow<List<Image>>
 
+    suspend fun getNoteTitleAndTextById(noteId: Long): Pair<String, String>
+
     suspend fun addImage(image: Image)
 
     suspend fun deleteImage(imageId: Long)

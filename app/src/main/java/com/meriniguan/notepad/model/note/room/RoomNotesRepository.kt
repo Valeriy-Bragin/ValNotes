@@ -94,7 +94,7 @@ class RoomNotesRepository @Inject constructor(
     }
 
     override fun getImagesByNoteId(noteId: Long):Flow<List<Image>> {
-        return noteDao.getNoteById(noteId).map { noteWithImages ->
+        return noteDao.getNoteWithImagesFlow(noteId).map { noteWithImages ->
             try {
                 noteWithImages.images.map { imageDbEntity ->
                     imageDbEntity.toImage()
@@ -104,6 +104,12 @@ class RoomNotesRepository @Inject constructor(
             }
         }
     }
+
+    override suspend fun getNoteTitleAndTextById(noteId: Long): Pair<String, String> =
+        withContext(ioDispatcher) {
+            val noteDbEntity = noteDao.getNoteById(noteId)
+            return@withContext Pair(noteDbEntity.title, noteDbEntity.text)
+        }
 
     override suspend fun addImage(image: Image) = withContext(ioDispatcher) {
         noteDao.addImage(ImageDbEntity.fromImage(image))

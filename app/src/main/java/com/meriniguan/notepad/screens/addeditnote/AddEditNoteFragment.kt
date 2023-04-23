@@ -67,6 +67,14 @@ class AddEditNoteFragment : Fragment(R.layout.fragment_add_edit_note) {
         binding.apply {
             titleEditText.setText(viewModel.title)
             contentEditText.setText(viewModel.content)
+            if (viewModel.dateReminded != 0L) {
+                binding.reminderTextView.text =
+                    getString(R.string.reminder_set_for, formatDate(viewModel.dateReminded))
+                binding.reminderImageView.setImageResource(R.drawable.alarm)
+            } else {
+                binding.reminderTextView.text = getString(R.string.add_reminder)
+                binding.reminderImageView.setImageResource(R.drawable.alarm_add)
+            }
         }
     }
 
@@ -112,8 +120,12 @@ class AddEditNoteFragment : Fragment(R.layout.fragment_add_edit_note) {
     }
 
     private fun setupReminderFields() {
-        binding.reminderGroup.setOnClickListener {
+        binding.reminderTextView.setOnClickListener {
             viewModel.onReminderClick()
+        }
+        binding.reminderTextView.setOnLongClickListener {
+            viewModel.onReminderLongClick()
+            true
         }
     }
 
@@ -158,22 +170,25 @@ class AddEditNoteFragment : Fragment(R.layout.fragment_add_edit_note) {
                 }
                 is AddEditNoteViewModel.Event.SetReminderAlarm -> {
                     setReminderAlarm(
-                        event.requestKey,
-                        event.dateReminded,
-                        event.title,
-                        event.content
+                        event.noteId,
+                        event.dateReminded
                     )
                 }
-                is AddEditNoteViewModel.Event.UpdateDateRemindedUI -> {
+                is AddEditNoteViewModel.Event.UpdateDateRemindeddUI -> {
                     binding.reminderTextView.text =
                         getString(R.string.reminder_set_for, formatDate(event.dateReminded))
+                    binding.reminderImageView.setImageResource(R.drawable.alarm)
+                }
+                AddEditNoteViewModel.Event.ResetDateRemindedUI -> {
+                    binding.reminderTextView.text = getString(R.string.add_reminder)
+                    binding.reminderImageView.setImageResource(R.drawable.alarm_add)
                 }
                 is AddEditNoteViewModel.Event.ShowConfirmDeleteReminderScreen -> {
                     AlertDialog.Builder(requireContext())
                         .setMessage(event.messageRes)
                         .setPositiveButton(event.buttonTextRes) { _, _ ->
                             viewModel.onDeleteReminderConfirmed()
-                        }
+                        }.show()
                 }
                 is AddEditNoteViewModel.Event.CancelReminderAlarm -> {
                     cancelReminderAlarm(event.requestKey)
@@ -182,12 +197,11 @@ class AddEditNoteFragment : Fragment(R.layout.fragment_add_edit_note) {
         }
     }
 
-    private fun setReminderAlarm(requestKey: Int, dateReminded: Long, title: String, content: String) {
+    private fun setReminderAlarm(noteId: Long, dateReminded: Long) {
         val alarmManager = requireActivity().getSystemService(ALARM_SERVICE) as AlarmManager
         val intent = Intent(requireContext(), ReminderAlarmReceiver::class.java)
-        intent.putExtra("title", title)
-        intent.putExtra("content", content)
-        val pendingIntent = PendingIntent.getBroadcast(requireContext(), requestKey, intent, getPendingIntentFlags())
+        intent.putExtra("noteId", noteId)
+        val pendingIntent = PendingIntent.getBroadcast(requireContext(), noteId.toInt(), intent, getPendingIntentFlags())
         alarmManager.set(
             AlarmManager.RTC_WAKEUP, dateReminded, pendingIntent
         )

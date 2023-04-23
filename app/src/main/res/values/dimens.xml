@@ -16,4 +16,5 @@
     <dimen name="navigation_drawer_image_height">180dp</dimen>
     <dimen name="big_margin">16dp</dimen>
     <dimen name="header_app_title_size">30sp</dimen>
+    <dimen name="indicator_height">16dp</dimen>
 </resources>
